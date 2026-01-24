@@ -1,0 +1,15 @@
+{
+  "name": "twitter-scraper-bot",
+  "version": "1.0.0",
+  "description": "Scrapes tweets from X/Twitter following timeline without algorithms",
+  "main": "scraper.js",
+  "scripts": {
+    "scrape": "node scraper.js"
+  },
+  "keywords": ["twitter", "x", "scraper", "puppeteer", "github-actions"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^22.0.0"
+  }
+}

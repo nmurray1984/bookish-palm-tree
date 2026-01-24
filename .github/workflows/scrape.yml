@@ -1,0 +1,52 @@
+name: Twitter Scraper
+
+on:
+  # Run every 30 minutes
+  schedule:
+    - cron: '*/30 * * * *'
+
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run scraper
+        env:
+          TWITTER_USERNAME: ${{ secrets.TWITTER_USERNAME }}
+          TWITTER_PASSWORD: ${{ secrets.TWITTER_PASSWORD }}
+          TWITTER_VERIFICATION: ${{ secrets.TWITTER_VERIFICATION }}
+          MAX_TWEETS: ${{ vars.MAX_TWEETS || '100' }}
+          HEADLESS: 'true'
+        run: npm run scrape
+
+      - name: Commit and push tweets
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add tweets/*.md
+
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📰 Update tweets - $(date +'%Y-%m-%d %H:%M:%S')"
+            git push
+          fi
